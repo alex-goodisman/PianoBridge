@@ -1,0 +1,32 @@
+[versions]
+agp = "8.6.0"
+concentus = "1.0.2"
+kordVoice = "0.9.0"
+kotlin = "1.9.0"
+coreKtx = "1.13.1"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.0"
+material = "1.12.0"
+constraintlayout = "2.1.4"
+oboe = "1.9.0"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+concentus = { module = "io.github.jaredmdobson:concentus", version.ref = "concentus" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+kord-core = { module = "dev.kord:kord-core", version.ref = "kordVoice" }
+kord-core-voice = { module = "dev.kord:kord-core-voice", version.ref = "kordVoice" }
+kord-voice = { module = "dev.kord:kord-voice", version.ref = "kordVoice" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+oboe = { module = "com.google.oboe:oboe", version.ref = "oboe" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
