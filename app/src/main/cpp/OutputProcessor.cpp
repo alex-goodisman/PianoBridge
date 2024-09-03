@@ -6,7 +6,6 @@
 #include "OutputProcessor.h"
 
 bool OutputProcessor::requestStart(int requestedSampleRate, int requestedChannelCount) {
-
     auto callbackHandler = std::make_shared<OutputProcessor::OutputCallbackHandler>(this);
 
     oboe::AudioStreamBuilder builder;

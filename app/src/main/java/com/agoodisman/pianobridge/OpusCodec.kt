@@ -60,7 +60,7 @@ class OpusCodec(sampleRate: Int) {
         // get the frame size corresponding to a given sample rate
         private fun computeFrameSize(sampleRate: Int) : Int {
             // samples/s * frame ms / (1000 ms/s) = samples per frame
-            return sampleRate * FRAME_DURATION_MS / 1000;
+            return sampleRate * FRAME_DURATION_MS / 1000
         }
         // get the number of pcm samples needed to supply one Opus frame at the given parameters
         fun computeNeededPCMSamples(sampleRate: Int) : Int {

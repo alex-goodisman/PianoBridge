@@ -81,7 +81,7 @@ Java_com_agoodisman_pianobridge_EngineDelegate_retrieveUplinkData(JNIEnv* env, j
     env->SetShortArrayRegion(arr, 0, size, storage);
 }
 
-// release reources before quitting
+// release resources before quitting
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_agoodisman_pianobridge_EngineDelegate_shutdown(JNIEnv*, jobject /* this */) {

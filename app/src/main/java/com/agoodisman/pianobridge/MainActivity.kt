@@ -127,7 +127,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 // if we're already connected, hitting the button means go back to editing
                 UIState.READY -> {
-                    showStateTransition("provide discord token")
+                    showStateTransition(getString(R.string.state_enter_token))
                     uiState = UIState.TOKEN
                     drawUI()
                 }
@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity() {
                 me.tryToken(tokenStr, sampleRate)
             }
         } else {
-            showStateTransition("provide discord token")
+            showStateTransition(getString(R.string.state_enter_token))
             uiState = UIState.TOKEN
             drawUI()
         }
@@ -152,7 +152,7 @@ class MainActivity : AppCompatActivity() {
     // attempt to connect to discord via Kord, and then update the UI appropriately
     // based on the result
     private suspend fun tryToken(tokenStr: String, sampleRate: Int) {
-        showStateTransition("Connecting to discord")
+        showStateTransition(getString(R.string.state_connecting))
         disableUI()
 
         discordConnection = DiscordConnection.connectToDiscord(coroutineScope, tokenStr, sampleRate)
@@ -160,17 +160,17 @@ class MainActivity : AppCompatActivity() {
         if (discordConnection == null) {
             // if we fail, go back to token state. We have to do this even though we're probably already there
             // because we could be doing this on startup and haven't entered the ui state yet
-            showStateTransition("bad token, reenter")
+            showStateTransition(getString(R.string.state_bad_token))
             uiState = UIState.TOKEN
             drawUI()
         } else {
-            showStateTransition("Connected, getting vc list")
+            showStateTransition(getString(R.string.state_connected))
             // while we're here, save the token for future use
             tokenFile!!.outputStream().bufferedWriter().use { it.write(tokenStr) }
             // get the list of voice channel names to populate the dropdown
             val vcMap = discordConnection!!.getVoiceChannels()
             // go to ready state
-            showStateTransition("Waiting to start")
+            showStateTransition(getString(R.string.state_ready))
             uiState = UIState.READY
             drawUI()
             runOnUiThread {
@@ -196,25 +196,21 @@ class MainActivity : AppCompatActivity() {
 
         // no id specified here. trust the system to configure its own device for the output
         var result = EngineDelegate.initializeEngineOutput(sampleRate, 2)//OpusCodec.channelCount.v)
-        showStateTransition(if (result) "Starting Output" else "failed to start output")
+        showStateTransition(if (result) getString(R.string.state_startup_1) else getString(R.string.state_startup_f1))
         if (!result) {
             return
         }
 
         // wait for output to actually happen
         result = EngineDelegate.awaitOutputInitialized()
-        showStateTransition(if (result) "Started Output" else "requested start output but then broke")
+        showStateTransition(if (result) getString(R.string.state_startup_2) else getString(R.string.state_startup_f2))
         if (!result) {
             return
         }
 
         // start discord uplink
-        if (discordConnection == null) {
-            showStateTransition("no conn")
-            return
-        }
         result = discordConnection!!.startUplink(binding.discordDropdown.selectedItem.toString(), EngineDelegate::retrieveUplinkData)
-        showStateTransition(if (result) "Discord Linking" else "failed to link discord")
+        showStateTransition(if (result) getString(R.string.state_startup_3) else getString(R.string.state_startup_f3))
         if (!result) {
             return
         }
@@ -228,18 +224,18 @@ class MainActivity : AppCompatActivity() {
 
         // provide -1 as the ID here, which tells the system to configure its own device for the input as well
         result = EngineDelegate.initializeEngineInput(sampleRate, -1, 2)//OpusCodec.channelCount.v)
-        showStateTransition(if (result) "Started Output, Starting input" else "failed to start input")
+        showStateTransition(if (result) getString(R.string.state_startup_4) else getString(R.string.state_startup_f4))
         if (!result) {
             return
         }
         lastInputID = -1 // remember that we passed -1
         runOnUiThread {
-            binding.sourceText.text = "Using inferred microphone"
+            binding.sourceText.text = getText(R.string.mic_state_inferred)
         }
 
         // wait for input to actually happen
         result = EngineDelegate.awaitInputInitialized()
-        showStateTransition(if (result) "Started Output+Input" else "requested start input but then broke")
+        showStateTransition(if (result) getString(R.string.state_running) else getString(R.string.state_startup_f5))
         if (!result) {
             return
         }
@@ -257,14 +253,14 @@ class MainActivity : AppCompatActivity() {
 
         // stop processing input
         var result = EngineDelegate.stopEngineInput()
-        showStateTransition(if (result) "Stopping Input" else "failed to stop input")
+        showStateTransition(if (result) getString(R.string.state_toggle_1) else getString(R.string.state_toggle_f1))
         if (!result) {
             return
         }
 
         // wait for it to stop AND CLOSE
         result = EngineDelegate.awaitInputStopped()
-        showStateTransition(if (result) "Stopped Input" else "requested stop input but then broke")
+        showStateTransition(if (result) getString(R.string.state_toggle_2) else getString(R.string.state_toggle_f2))
         if (!result) {
             return
         }
@@ -274,18 +270,18 @@ class MainActivity : AppCompatActivity() {
         val nextInputID = if (lastInputID == -1) builtinInputDevice else -1
 
         result = EngineDelegate.initializeEngineInput(sampleRate, nextInputID, 2)//OpusCodec.channelCount.v)
-        showStateTransition(if (result) "Restarting Input" else "failed to restart input")
+        showStateTransition(if (result) getString(R.string.state_toggle_3) else getString(R.string.state_toggle_f3))
         if (!result) {
             return
         }
         lastInputID = nextInputID
         runOnUiThread {
-            binding.sourceText.text = if (lastInputID == -1) "Using inferred mic" else "Forcing builtin mic"
+            binding.sourceText.text = if (lastInputID == -1) getText(R.string.mic_state_inferred) else getText(R.string.mic_state_builtin)
         }
 
         // wait for input to start again
         result = EngineDelegate.awaitInputInitialized()
-        showStateTransition(if (result) "Restarted Output+Input" else "requested restart input but then broke")
+        showStateTransition(if (result) getString(R.string.state_resumed) else getString(R.string.state_toggle_f4))
     }
 
     // pseudo-declarative button drawing. set everything being visible and/or enabled as necessary
@@ -302,7 +298,7 @@ class MainActivity : AppCompatActivity() {
                     binding.toggleButton.visibility = View.INVISIBLE
                     binding.tokenButton.visibility = View.VISIBLE
                     binding.tokenButton.isEnabled = false
-                    binding.tokenButton.text = "Save Token"
+                    binding.tokenButton.text = getText(R.string.token_button_save)
                 }
                 UIState.TOKEN -> {
                     binding.tokenField.visibility = View.VISIBLE
@@ -314,7 +310,7 @@ class MainActivity : AppCompatActivity() {
                     binding.toggleButton.visibility = View.INVISIBLE
                     binding.tokenButton.visibility = View.VISIBLE
                     binding.tokenButton.isEnabled = true
-                    binding.tokenButton.text = "Save Token"
+                    binding.tokenButton.text = getText(R.string.token_button_save)
                 }
                 UIState.READY -> {
                     binding.tokenField.visibility = View.INVISIBLE
@@ -323,12 +319,12 @@ class MainActivity : AppCompatActivity() {
 
                     binding.startButton.visibility = View.VISIBLE
                     binding.startButton.isEnabled = true
-                    binding.startButton.text = "Start"
+                    binding.startButton.text = getText(R.string.start_button)
                     binding.sourceText.visibility = View.INVISIBLE
                     binding.toggleButton.visibility = View.INVISIBLE
                     binding.tokenButton.visibility = View.VISIBLE
                     binding.tokenButton.isEnabled = true
-                    binding.tokenButton.text = "Re-Enter Token"
+                    binding.tokenButton.text = getText(R.string.token_button_reenter)
                 }
                 UIState.STARTED -> {
                     binding.tokenField.visibility = View.INVISIBLE
@@ -337,7 +333,7 @@ class MainActivity : AppCompatActivity() {
 
                     binding.startButton.visibility = View.VISIBLE
                     binding.startButton.isEnabled = true
-                    binding.startButton.text = "Disconnect"
+                    binding.startButton.text = getText(R.string.stop_button)
                     binding.sourceText.visibility = View.VISIBLE
                     binding.toggleButton.visibility = View.VISIBLE
                     binding.toggleButton.isEnabled = true
@@ -349,7 +345,7 @@ class MainActivity : AppCompatActivity() {
                     binding.discordDropdown.isEnabled = false
 
                     binding.startButton.visibility = View.VISIBLE
-                    binding.startButton.text = "Stop"
+                    binding.startButton.text = getText(R.string.quit_button)
                     binding.sourceText.visibility = View.VISIBLE
                     binding.toggleButton.visibility = View.VISIBLE
                     binding.toggleButton.isEnabled = false

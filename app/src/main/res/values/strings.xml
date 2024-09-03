@@ -1,3 +1,44 @@
 <resources>
     <string name="app_name">PianoBridge</string>
+
+    <!-- mic states -->
+    <string name="mic_state_init">Waiting for microphone setup</string>
+    <string name="mic_state_inferred">Using inferred microphone</string>
+    <string name="mic_state_builtin">Forcing builtin microphone</string>
+
+    <!-- status messages -->
+    <string name="state_init">Initializing</string>
+    <string name="state_enter_token">Provide discord token</string>
+    <string name="state_bad_token">Bad token, re-enter</string>
+    <string name="state_connecting">Connecting to Discord</string>
+    <string name="state_connected">Connected, retrieving voice channels</string>
+    <string name="state_ready">Waiting to Start</string>
+    <string name="state_startup_1">Starting output</string>
+    <string name="state_startup_2">Started output</string>
+    <string name="state_startup_3">Discord linking</string>
+    <string name="state_startup_4">Starting input</string>
+    <string name="state_running">Transmitting</string>
+    <string name="state_startup_f1">Failed to start output</string>
+    <string name="state_startup_f2">Requested output startup but then failed</string>
+    <string name="state_startup_f3">Failed to link to Discord</string>
+    <string name="state_startup_f4">Failed to start input</string>
+    <string name="state_startup_f5">Requested input startup but then failed</string>
+    <string name="state_toggle_1">Stopping input</string>
+    <string name="state_toggle_2">Stopped input</string>
+    <string name="state_toggle_3">Restarting input</string>
+    <string name="state_resumed">Resumed transmitting</string>
+    <string name="state_toggle_f1">Failed to stop input</string>
+    <string name="state_toggle_f2">Requested input stop but then failed</string>
+    <string name="state_toggle_f3">Restarting input</string>
+    <string name="state_toggle_f4">Requested input restart but then failed</string>
+
+    <!-- buttons and fields -->
+    <string name="start_button">Start</string>
+    <string name="stop_button">Disconnect</string>
+    <string name="quit_button">Stop</string>
+    <string name="toggle_button">Toggle Mic</string>
+    <string name="token_button_save">Save Token</string>
+    <string name="token_button_reenter">Re-Enter Token</string>
+    <string name="token_field_hint">Discord bot authentication token</string>
+    <string name="token_field_text_init">Token</string>
 </resources>
