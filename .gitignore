@@ -16,3 +16,6 @@ local.properties
 
 #intellij/android studio
 .idea
+
+#artifacts
+app/build
