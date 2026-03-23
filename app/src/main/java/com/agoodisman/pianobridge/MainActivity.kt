@@ -1,6 +1,7 @@
 package com.agoodisman.pianobridge
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
@@ -16,6 +17,8 @@ import com.agoodisman.pianobridge.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import moe.kyokobot.libdave.NativeDaveFactory
+import moe.kyokobot.libdave.jda.LDJDADaveSessionFactory
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -85,6 +88,12 @@ class MainActivity : AppCompatActivity() {
 
         // handle Go button
         binding.startButton.setOnClickListener {
+            val daveFactory = NativeDaveFactory()
+            val daveSessionFactory = LDJDADaveSessionFactory(daveFactory)
+            AlertDialog.Builder(this)
+                .setMessage("libdave loaded successfully ($daveSessionFactory)")
+                .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+                .show()
             when (uiState) {
                 UIState.READY -> {
                     // if ready to start, start
@@ -99,7 +108,7 @@ class MainActivity : AppCompatActivity() {
                     uiState = UIState.STOPPED
                     drawUI()
                     coroutineScope.launch {
-                        discordConnection!!.stopLinks()
+// TODO put back                       discordConnection?.stopLinks()
                     }
                 }
                 UIState.STOPPED -> {
@@ -155,9 +164,9 @@ class MainActivity : AppCompatActivity() {
         showStateTransition(getString(R.string.state_connecting))
         disableUI()
 
-        discordConnection = DiscordConnection.connectToDiscord(coroutineScope, tokenStr, sampleRate)
+// TODO put back      discordConnection = DiscordConnection.connectToDiscord(coroutineScope, tokenStr, sampleRate)
 
-        if (discordConnection == null) {
+        if (discordConnection != null /* TODO inverted */) {
             // if we fail, go back to token state. We have to do this even though we're probably already there
             // because we could be doing this on startup and haven't entered the ui state yet
             showStateTransition(getString(R.string.state_bad_token))
@@ -168,16 +177,16 @@ class MainActivity : AppCompatActivity() {
             // while we're here, save the token for future use
             tokenFile!!.outputStream().bufferedWriter().use { it.write(tokenStr) }
             // get the list of voice channel names to populate the dropdown
-            val vcMap = discordConnection!!.getVoiceChannels()
+//            val vcMap = discordConnection?.getVoiceChannels()
             // go to ready state
             showStateTransition(getString(R.string.state_ready))
             uiState = UIState.READY
             drawUI()
             runOnUiThread {
                 // actually populate the dropdown
-                val vcSpinnerAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, vcMap.keys.toList())
-                vcSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                binding.discordDropdown.adapter = vcSpinnerAdapter
+//  TODO put all this back              val vcSpinnerAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, vcMap!!.keys.toList())
+//                vcSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+//                binding.discordDropdown.adapter = vcSpinnerAdapter
             }
         }
 
@@ -209,7 +218,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // start discord uplink
-        result = discordConnection!!.startUplink(binding.discordDropdown.selectedItem.toString(), EngineDelegate::retrieveUplinkData)
+// TODO put back       result = discordConnection?.startUplink(binding.discordDropdown.selectedItem.toString(), EngineDelegate::retrieveUplinkData)!!
         showStateTransition(if (result) getString(R.string.state_startup_3) else getString(R.string.state_startup_f3))
         if (!result) {
             return
@@ -217,7 +226,7 @@ class MainActivity : AppCompatActivity() {
 
         // start discord downlink now that we have an active conn (from the uplink) and a place for output to go (the output processor)
         coroutineScope.launch {
-            discordConnection!!.startDownlink(EngineDelegate::provideDownlinkData)
+//  TODO put back          discordConnection?.startDownlink(EngineDelegate::provideDownlinkData)
         }
 
         // finally do input to provide both uplink and loopback

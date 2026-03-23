@@ -46,7 +46,14 @@ android {
         viewBinding true
         prefab true
     }
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDirs("src/main/jniLibs")
+        }
+    }
+
 }
+
 
 dependencies {
 
@@ -58,8 +65,12 @@ dependencies {
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
     implementation libs.oboe
-    implementation libs.kord.voice
-    implementation libs.kord.core
-    implementation libs.kord.core.voice
     implementation libs.concentus
+
+    implementation("net.dv8tion:JDA:6.3.1") {
+        exclude module: "opus-java"
+        exclude group: "moe.kyokobot.libdave"
+    }
+    implementation("moe.kyokobot.libdave:adapter-jda:ce725965e")
+    implementation("moe.kyokobot.libdave:impl-jni:ce725965e")
 }
