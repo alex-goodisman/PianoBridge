@@ -19,3 +19,6 @@ local.properties
 
 #artifacts
 app/build
+
+#natives
+app/src/main/jniLibs
