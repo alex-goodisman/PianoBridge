@@ -67,10 +67,10 @@ dependencies {
     implementation libs.oboe
     implementation libs.concentus
 
-    implementation("net.dv8tion:JDA:6.3.1") {
+    implementation("net.dv8tion:JDA:6.3.2_DEV") {
         exclude module: "opus-java"
         exclude group: "moe.kyokobot.libdave"
     }
-    implementation("moe.kyokobot.libdave:adapter-jda:ce725965e")
-    implementation("moe.kyokobot.libdave:impl-jni:ce725965e")
+    implementation("moe.kyokobot.libdave:adapter-jda:eec9c3e66")
+    implementation("moe.kyokobot.libdave:impl-jni:eec9c3e66")
 }
