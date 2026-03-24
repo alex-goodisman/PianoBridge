@@ -26,3 +26,11 @@ The loopback circuit is run entirely in the native layer through JNI, and uses G
 When you're in talking mode, it currently still runs the loopback circuit so you hear your own voice. This is fine, since the latency is low enough it just sounds like being in an echoey room. But it could easily by disabled by just passing an extra flag to the audio input stream wrapper over JNI, so it should probably do that.
 
 Also this is only guaranteed to work on my phone, with my piano, on this version of Android, and on current versions of the Discord API, so it's very likely to break for you. If you have a different setup, or you use iOS, then you'll have to do what I did and implement it yourself.
+
+## Dependencies
+### JDA
+This uses JDA for the Discord API calls. JDA is not natively supported on Android but it almost works out-of-the-box. I have a fork [here](https://github.com/alex-goodisman/JDA/tree/android-compat) that this is built-against. The Maven dependency specification is just the output of building the JDA fork locally. Also, the Opus audio codec that ships with JDA doesn't run on Android either, so it's disabled, and audio processing is done with Concentus, which is pure Java.
+
+### libdave-jvm
+Using JDA for audio requires providing a DAVE implementation. JDave is not supported on Android. Technically, libdave-jvm isn't either, but I have a fork of this too, [here](https://github.com/alex-goodisman/libdave-jvm/tree/android-build). The Maven dependency specification is the output of building that branch locally. The native library has to be built separately and copied to the jniLibs folder.
+### TODO cmake build steps for libdave-jvm
