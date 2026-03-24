@@ -14,7 +14,6 @@ class DataQueue {
 public:
     void enqueue(short* data, int32_t numFrames);
     void dequeue(short* data, int32_t numFrames);
-    int32_t size();
 private:
     std::mutex mutex;
     // as long as everyone agrees on the sample rate

@@ -23,9 +23,6 @@ object EngineDelegate {
     // provide data to the downlink queue
     external fun provideDownlinkData(arr: ShortArray, numSamples: Int)
 
-    // check the size of the uplink queue in samples
-    external fun uplinkQueueSize(): Int
-
     // get a data frame from the uplink queue to send to discord
     external fun retrieveUplinkData(arr: ShortArray, numSamples: Int)
 

@@ -71,13 +71,6 @@ Java_com_agoodisman_pianobridge_EngineDelegate_provideDownlinkData(JNIEnv* env, 
     downlinkQueue.enqueue(storage, numSamples);
 }
 
-// check how much data there is in the uplink queue, to see if we can provide a full sample set
-extern "C"
-JNIEXPORT jint JNICALL
-Java_com_agoodisman_pianobridge_EngineDelegate_uplinkQueueSize(JNIEnv* env, jobject /* this */) {
-    return (jint)uplinkQueue.size();
-}
-
 // get data from the uplink queue to be sent to discord, called from the discord connection
 extern "C"
 JNIEXPORT void JNICALL

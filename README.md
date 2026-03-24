@@ -1,8 +1,8 @@
 # PianoBridge
-Combination Audio Interface and Discord Bot Client to run on your phone- play an electric piano over Discord
+Combination Audio Interface and Discord Bot Client to run on your phone: play an electric piano over Discord
 
 ## What is this for?
-If you have an electric piano keyboard (or any other audio source that's compatible with your phone), you've probably wondered if if you could somehow stream that audio to your friends and family over the Internet. Specifically, you may have wanted to join a Discord call and pretend to be a virtual saloon entertainer for your friends while listening to the call.
+If you have an electric piano keyboard (or any other audio source that's compatible with your phone), you've probably wondered if you could somehow stream that audio to your friends and family over the Internet. Specifically, you may have wanted to join a Discord call and pretend to be a virtual saloon entertainer for your friends while listening to the call.
 
 However, the combined forces of Discord's mobile app changing all the time, mobile audio drivers generally being poorly documented and bad, and hardware being questionable have probably made you give up on this goal.
 
@@ -20,17 +20,21 @@ Other participants in the call will see the Bot user join when you press the Sta
 Latency sending the music to discord and retrieving the voice call data is up to the implementation and your network connection, which is to say it's bad. However, the loopback circuit so that you can hear yourself play is extremely low-latency, so you should still be able to stream on a bad connection, you'll just be a few seconds in the future.
 
 ## How does it work?
-The loopback circuit is run entirely in the native layer through JNI, and uses Google's Oboe wrapper around AAudio to stream the mic to the headphones with extremely low latency. The Discord connection is run in the Kotlin layer, using the Kord coroutine library for Discord voice connections. Audio samples are queued in the native layer, and every time Kord provides or requests a sample, it retrieves the next data from the queue over the JNI bridge. Audio conversions use the Concentus codec for the Opus audio format that Discord expects.
+The loopback circuit is run entirely in the native layer through JNI, and uses Google's Oboe wrapper around AAudio to stream the mic to the headphones with extremely low latency. The Discord connection is run in the Kotlin layer, using JDA for Discord voice connections. Audio samples are queued in the native layer, and every time JDA provides or requests a sample, it retrieves the next data from the queue over the JNI bridge. Audio conversions use the Concentus codec for the Opus audio format that Discord expects.
 
 ## Future things
-When you're in talking mode, it currently still runs the loopback circuit so you hear your own voice. This is fine, since the latency is low enough it just sounds like being in an echoey room. But it could easily by disabled by just passing an extra flag to the audio input stream wrapper over JNI, so it should probably do that.
+When you're in talking mode, it currently still runs the loopback circuit so you hear your own voice. This is fine, since the latency is low enough it just sounds like being in an echoey room. But it could easily be disabled by just passing an extra flag to the audio input stream wrapper over JNI, so it should probably do that.
 
-Also this is only guaranteed to work on my phone, with my piano, on this version of Android, and on current versions of the Discord API, so it's very likely to break for you. If you have a different setup, or you use iOS, then you'll have to do what I did and implement it yourself.
+Also, this is only guaranteed to work on my phone, with my piano, on this version of Android, and on current versions of the Discord API, so it's very likely to break for you. If you have a different setup, or you use iOS, then you'll have to do what I did and implement it yourself.
 
 ## Dependencies
 ### JDA
-This uses JDA for the Discord API calls. JDA is not natively supported on Android but it almost works out-of-the-box. I have a fork [here](https://github.com/alex-goodisman/JDA/tree/android-compat) that this is built-against. The Maven dependency specification is just the output of building the JDA fork locally. Also, the Opus audio codec that ships with JDA doesn't run on Android either, so it's disabled, and audio processing is done with Concentus, which is pure Java.
+This uses JDA for the Discord API calls. JDA is not natively supported on Android, but it almost works out-of-the-box. I have a fork [here](https://github.com/alex-goodisman/JDA/tree/android-and-subclass) that this is built-against. The Maven dependency specification is just the output of building the JDA fork locally. Also, the Opus audio codec that ships with JDA doesn't run on Android either, so it's disabled, and audio processing is done in the app with Concentus, which is pure Java.
 
 ### libdave-jvm
-Using JDA for audio requires providing a DAVE implementation. JDave is not supported on Android. Technically, libdave-jvm isn't either, but I have a fork of this too, [here](https://github.com/alex-goodisman/libdave-jvm/tree/android-build). The Maven dependency specification is the output of building that branch locally. The native library has to be built separately and copied to the jniLibs folder.
-### TODO cmake build steps for libdave-jvm
+Using JDA for audio requires providing a DAVE implementation. JDave is not supported on Android. Technically, libdave-jvm isn't either, but I have a fork of this too, [here](https://github.com/alex-goodisman/libdave-jvm/tree/android-build). The Maven dependency specification is the output of building that branch locally. The native library has to be built separately and copied to the `jniLibs` folder.
+
+### Building
+Build the JDA fork and publish to Maven local. The Maven specification may have to be updated since it depends on the numbering of the development build of JDA.
+Build libdave-jvm and publish to Maven local. This one shouldn't need to be updated because the Maven specification is a commit hash. Then the natives need to be built as well, specifying the Android version and ABI, and copied to `src/main/jniLibs`. See that repo for more details.
+I expect the libdave-jvm fork and at least some of the work on JDA to get merged in eventually, but they explicitly don't maintain Android support, so that fork will have to stay open.

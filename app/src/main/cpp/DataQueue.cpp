@@ -5,11 +5,6 @@
 #include <android/log.h>
 #include "DataQueue.h"
 
-int32_t DataQueue::size() {
-    std::unique_lock<std::mutex> lk(this->mutex);
-    return (int32_t)this->data.size();
-}
-
 void DataQueue::dequeue(short* receiver, int32_t numSamples) {
 
     // don't enqueue while we're de-queueing just in case

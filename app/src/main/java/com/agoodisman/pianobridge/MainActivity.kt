@@ -1,7 +1,6 @@
 package com.agoodisman.pianobridge
 
 import android.Manifest
-import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
@@ -209,9 +208,7 @@ class MainActivity : AppCompatActivity() {
         // finally do input to provide both uplink and loopback
 
         // provide -1 as the ID here, which tells the system to configure its own device for the input as well
-        Log.e("sizeprint", "requested sample rate $sampleRate")
         result = EngineDelegate.initializeEngineInput(sampleRate, -1, 2)//OpusCodec.channelCount.v)
-        Log.e("sizeprint", "engine initialize result $result")
         showStateTransition(if (result) getString(R.string.state_startup_4) else getString(R.string.state_startup_f4))
         if (!result) {
             return

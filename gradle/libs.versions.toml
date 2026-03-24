@@ -1,8 +1,10 @@
 [versions]
 agp = "8.13.2"
 concentus = "1.0.2"
-libdave = "ce725965e"
-kordVoice = "0.9.0"
+# Forked build of 6.3.2
+jda = "6.3.2_DEV"
+# Forked build of ce725965e
+libdave = "eec9c3e66"
 kotlin = "2.2.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -14,19 +16,17 @@ constraintlayout = "2.1.4"
 oboe = "1.9.0"
 
 [libraries]
+libdaveimpljni = { module = "moe.kyokobot.libdave:impl-jni", version.ref = "libdave" }
+libdaveadapterjda = { module = "moe.kyokobot.libdave:adapter-jda", version.ref = "libdave" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 concentus = { module = "io.github.jaredmdobson:concentus", version.ref = "concentus" }
-libdave = { module = "moe.kyokobot.libdave:impl-jni", version.ref = "libdave" }
+jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-kord-core = { module = "dev.kord:kord-core", version.ref = "kordVoice" }
-kord-core-voice = { module = "dev.kord:kord-core-voice", version.ref = "kordVoice" }
-kord-voice = { module = "dev.kord:kord-voice", version.ref = "kordVoice" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-libdavenative = { module = "moe.kyokobot.libdave:natives-linux-aarch64", version.ref = "libdave" }
 oboe = { module = "com.google.oboe:oboe", version.ref = "oboe" }
 
 [plugins]
