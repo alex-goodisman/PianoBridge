@@ -13,9 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.getSystemService
 import com.agoodisman.pianobridge.databinding.ActivityMainBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -27,10 +24,6 @@ class MainActivity : AppCompatActivity() {
     private var tokenFile: File? = null
 
     private var uiState = UIState.LOADING
-
-    // coroutine scope for doing misc work
-    private val coroutineScope = CoroutineScope(Dispatchers.Default)
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,18 +82,15 @@ class MainActivity : AppCompatActivity() {
                 UIState.READY -> {
                     // if ready to start, start
                     disableUI()
-                    coroutineScope.launch {
-                        me.start(sampleRate)
-                        drawUI()
-                    }
+                    me.start(sampleRate)
+                    drawUI()
+
                 }
                 UIState.STARTED -> {
                     // if in started state, start button becomes the stop button
                     uiState = UIState.STOPPED
                     drawUI()
-                    coroutineScope.launch {
-                        discordConnection!!.stopLinks()
-                    }
+                    discordConnection!!.stopLinks()
                 }
                 UIState.STOPPED -> {
                     // if in stopped state, start button becomes the quit button
@@ -113,16 +103,14 @@ class MainActivity : AppCompatActivity() {
 
         // handle toggling between normal mic and forced talking mic
         binding.toggleButton.setOnClickListener {
-            coroutineScope.launch {
-                me.toggleInput(sampleRate, builtinInputDevice)
-            }
+            me.toggleInput(sampleRate, builtinInputDevice)
         }
 
         // handle saving / editing the token
         binding.tokenButton.setOnClickListener {
             when(uiState) {
                 // if we're token editing already, then try to connect with the new token and save it
-                UIState.TOKEN -> coroutineScope.launch {
+                UIState.TOKEN -> {
                     me.tryToken(binding.tokenField.text.toString(), sampleRate)
                 }
                 // if we're already connected, hitting the button means go back to editing
@@ -139,9 +127,8 @@ class MainActivity : AppCompatActivity() {
         if (tokenFile!!.exists()) {
             val tokenStr = tokenFile!!.inputStream().bufferedReader().use { it.readText() }
             binding.tokenField.setText(tokenStr) // save to text field in case it doesn't work and we go back
-            coroutineScope.launch {
-                me.tryToken(tokenStr, sampleRate)
-            }
+            me.tryToken(tokenStr, sampleRate)
+
         } else {
             showStateTransition(getString(R.string.state_enter_token))
             uiState = UIState.TOKEN
@@ -151,11 +138,11 @@ class MainActivity : AppCompatActivity() {
 
     // attempt to connect to discord via Kord, and then update the UI appropriately
     // based on the result
-    private suspend fun tryToken(tokenStr: String, sampleRate: Int) {
+    private fun tryToken(tokenStr: String, sampleRate: Int) {
         showStateTransition(getString(R.string.state_connecting))
         disableUI()
 
-        discordConnection = DiscordConnection.connectToDiscord(coroutineScope, tokenStr, sampleRate)
+        discordConnection = DiscordConnection.connectToDiscord(tokenStr, sampleRate)
 
         if (discordConnection == null) {
             // if we fail, go back to token state. We have to do this even though we're probably already there
@@ -191,7 +178,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // run the main state machine to start up processing
-    private suspend fun start(sampleRate: Int) {
+    private fun start(sampleRate: Int) {
         // start output processor to play audio
 
         // no id specified here. trust the system to configure its own device for the output
@@ -209,16 +196,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         // start discord uplink
-        result = discordConnection!!.startUplink(binding.discordDropdown.selectedItem.toString(), EngineDelegate::retrieveUplinkData)
+        result = discordConnection!!.startUplink(binding.discordDropdown.selectedItem.toString(),EngineDelegate::retrieveUplinkData)
         showStateTransition(if (result) getString(R.string.state_startup_3) else getString(R.string.state_startup_f3))
         if (!result) {
             return
         }
 
         // start discord downlink now that we have an active conn (from the uplink) and a place for output to go (the output processor)
-        coroutineScope.launch {
-            discordConnection!!.startDownlink(EngineDelegate::provideDownlinkData)
-        }
+        discordConnection!!.startDownlink(EngineDelegate::provideDownlinkData)
 
         // finally do input to provide both uplink and loopback
 
@@ -265,7 +250,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // if we were in "pick your input" (-1) mode, now we hardcode the builtin device to get ambient mic
+        // if we were in "pick your input" (-1) mode, now we hard-code the builtin device to get ambient mic
         // otherwise, if were already hardcoded, go back to -1. If there was no builtin device, then it will be -1 either way.
         val nextInputID = if (lastInputID == -1) builtinInputDevice else -1
 
